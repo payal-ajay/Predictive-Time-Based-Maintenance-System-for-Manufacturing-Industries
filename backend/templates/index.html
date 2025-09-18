@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Predictive Maintenance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1C1C1C, #4B0082);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            width: 50%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 10px rgba(255, 165, 0, 0.3);
+            border-radius: 10px;
+            text-align: center;
+        }
+        h1 {
+            color: #FFA500;
+            text-shadow: 2px 2px 5px black;
+        }
+        h5 {
+            color: #D3D3D3;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #FFA500;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+        input::placeholder {
+            color: #D3D3D3;
+        }
+        button {
+            background: #FFA500;
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #FF4500;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #FFA500;
+            font-size: 18px;
+        }
+        .footer-note {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbb;
+        }
+        .accuracy-info {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #FFCC00;
+            font-weight: bold;
+        }
+        
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Predictive Maintenance System</h1>
+        <h5>Enter sensor data to predict machine failure</h5>
+
+        <form id="prediction-form">
+            <label for="footfall">Footfall (persons/hour):</label>
+            <input type="number" id="footfall" name="footfall" placeholder="Enter value" required>
+
+            <label for="tempMode">Temperature Mode (°C):</label>
+            <input type="number" id="tempMode" name="tempMode" placeholder="Enter value" required>
+
+            <label for="AQ">Air Quality (AQI):</label>
+            <input type="number" id="AQ" name="AQ" placeholder="Enter value" required>
+
+            <label for="USS">Ultrasonic Sensor (cm):</label>
+            <input type="number" id="USS" name="USS" placeholder="Enter value" required>
+
+            <label for="CS">Current Sensor (A):</label>
+            <input type="number" id="CS" name="CS" placeholder="Enter value" required>
+
+            <label for="VOC">Volatile Organic Compounds (ppm):</label>
+            <input type="number" id="VOC" name="VOC" placeholder="Enter value" required>
+
+            <label for="RP">Rotational Pressure (psi):</label>
+            <input type="number" id="RP" name="RP" placeholder="Enter value" required>
+
+            <label for="IP">Internal Pressure (bar):</label>
+            <input type="number" id="IP" name="IP" placeholder="Enter value" required>
+
+            <label for="Temperature">Temperature (°C):</label>
+            <input type="number" id="Temperature" name="Temperature" placeholder="Enter value" required>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <div class="result" id="prediction-result"></div>
+        <div class="accuracy-info" id="accuracy-info"></div>
+        <div class="footer-note">
+            Suggested Use: HVAC or Robotics monitoring in Industry 4.0 factories
+        </div>
+        <div class="accuracy-info" id="accuracy-info"></div>
+    </div>
+
+    <script>
+        document.getElementById("prediction-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+    
+            let formData = {
+                footfall: parseFloat(document.getElementById("footfall").value),
+                tempMode: parseFloat(document.getElementById("tempMode").value),
+                AQ: parseFloat(document.getElementById("AQ").value),
+                USS: parseFloat(document.getElementById("USS").value),
+                CS: parseFloat(document.getElementById("CS").value),
+                VOC: parseFloat(document.getElementById("VOC").value),
+                RP: parseFloat(document.getElementById("RP").value),
+                IP: parseFloat(document.getElementById("IP").value),
+                Temperature: parseFloat(document.getElementById("Temperature").value)
+            };
+    
+            fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("prediction-result").innerText = "Prediction: " + data.prediction;
+    
+                // Fetch accuracy only after prediction
+                fetch("/accuracy")
+                    .then(response => response.json())
+                    .then(acc => {
+                        document.getElementById("accuracy-info").innerText = "Model Accuracy: " + acc.accuracy + "%";
+                    });
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    </script>
+    
+
+</body>
+</html>
